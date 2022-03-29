@@ -28,6 +28,18 @@ local function HasVehicleKey(plate)
 	end, plate)
 	return HasVehicleKey
 end
+exports('HasVehicleKey', HasVehicleKey)
+
+
+function CallPolice(a,b,c,d,e)
+    TriggerEvent("un-dispatchn:carjacking", {
+    model = a,
+    plate = b,
+    firstColor = c,
+    secondColor = d,
+    heading = e
+    })   
+end
 
 local function LockVehicle()
     local ped = PlayerPedId()
@@ -130,7 +142,11 @@ local function PoliceCall()
                     local modelPlate = QBCore.Functions.GetPlate(vehicle)
                     local msg = "Vehicle theft attempt at " .. streetLabel .. ". Vehicle: " .. Name .. ", Licenseplate: " .. modelPlate
                     local alertTitle = "Vehicle theft attempt at"
-                    TriggerServerEvent("police:server:VehicleCall", pos, msg, alertTitle, streetLabel, modelPlate, Name)
+                    local firstcolor = GetVehicleCustomPrimaryColour(vehicle)
+                    local secondcolor = GetVehicleCustomSecondaryColour(vehicle)
+                    local carhead = GetEntityHeading(vehicle)
+                    CallPolice(Name, modelPlate, firstcolor, secondcolor, carhead)
+                    QBCore.Functions.Notify('Someone Called The Police!', 'error')
                 else
                     local vehicle = QBCore.Functions.GetClosestVehicle()
                     local modelName = GetDisplayNameFromVehicleModel(GetEntityModel(vehicle)):lower()
@@ -142,7 +158,11 @@ local function PoliceCall()
                     end
                     local msg = "Vehicle theft attempt at " .. streetLabel .. ". Vehicle: " .. Name .. ", Licenseplate: " .. modelPlate
                     local alertTitle = "Vehicle theft attempt at"
-                    TriggerServerEvent("police:server:VehicleCall", pos, msg, alertTitle, streetLabel, modelPlate, Name)
+                    local firstcolor = GetVehicleCustomPrimaryColour(vehicle)
+                    local secondcolor = GetVehicleCustomSecondaryColour(vehicle)
+                    local carhead = GetEntityHeading(vehicle)
+                    CallPolice(Name, modelPlate, firstcolor, secondcolor, carhead)
+                    QBCore.Functions.Notify('Someone Called The Police!', 'error')
                 end
             end
         end
@@ -167,7 +187,6 @@ local function lockpickFinish(success)
     else
         PoliceCall()
         TriggerServerEvent('hud:server:GainStress', math.random(1, 4))
-        QBCore.Functions.Notify('Someone Called The Police!', 'error')
     end
     if usingAdvanced then
         if chance <= Config.RemoveLockpickAdvanced then
